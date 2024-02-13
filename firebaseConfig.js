@@ -1,9 +1,11 @@
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth"
+
+
 //import {getFirestore} from "firebase/firestore";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyBJIBeIqMl30ddbqlYH2pfXS3E-tIEsmBA",
+  apiKey: "AIzaSyD-Pba0OHtNQH68j8T2O0NwmWfee5scSQw",
   authDomain: "sistema-inteligente-agua.firebaseapp.com",
   projectId: "sistema-inteligente-agua",
   storageBucket: "sistema-inteligente-agua.appspot.com",
