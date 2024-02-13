@@ -5,16 +5,13 @@ import { useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { Button, View, Text, TextInput, StyleSheet, TouchableOpacity, Image, ScrollView } from 'react-native';
+import { Button, View, Text, TextInput, StyleSheet, TouchableOpacity, Image, ScrollView, Linking} from 'react-native';
 import { firebase_auth } from './firebaseConfig'; 
 import { signInWithEmailAndPassword } from 'firebase/auth'; // Certifique-se de importar corretamente a função de autenticação do Firebase
 import { Ionicons } from '@expo/vector-icons';
 import { AntDesign } from '@expo/vector-icons';
 
 
-
-
-// Tela de Login
 const LoginScreen = ({ navigation, setIsLoggedIn }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -23,15 +20,21 @@ const LoginScreen = ({ navigation, setIsLoggedIn }) => {
 
   const signIn = async () => {
     try {
-      // Substitua 'auth' pela instância do Firebase Authentication que você está usando
       const response = await signInWithEmailAndPassword(auth, email, password);
       console.log(response);
       alert('Autenticação verificada!');
       setIsLoggedIn(true);
     } catch (error) {
-      alert('Falha na autenticação: ' + error.message);
-      console.log(error);
+      if (error.code === 'auth/invalid-login-credentials') {
+        // Defina a mensagem de erro para credenciais inválidas
+        alert('Email e/ou senha inválidos!');
+      } else {
+        // Defina a mensagem de erro padrão para outros erros
+        alert('Falha na autenticação: ' + error.message);
+        console.log(error);
+      }
     }
+    
   };
 
   return (
@@ -57,7 +60,7 @@ const LoginScreen = ({ navigation, setIsLoggedIn }) => {
 
 
         </View>
-      );
+  );
 };
 
 // Tela de Home
@@ -129,6 +132,15 @@ const HomeScreen = () => (
             
         );
 
+/* para add o usuario logado:
+
+              <View style={styles.caixa2}>
+                <Text style = {styles.title1}>Usuário logado: </Text>
+                <Text style = {styles.title2}> {email} </Text>
+                </View>
+
+*/
+
 
 // Tela de Configuração
 const SettingsScreen = ({email}) => (
@@ -138,22 +150,24 @@ const SettingsScreen = ({email}) => (
             <Text style={styles.headerText2}>  Informações</Text>
             </View>
 
-            <View style={styles.caixaContainer}>
-                <View style={styles.caixa2}>
-                <Text style = {styles.title1}>Usuário logado: </Text>
-                <Text style = {styles.title2}> {email} </Text>
-                </View>
+            
+              <View style={styles.caixaContainer}>
+
 
 
                 <View style={styles.caixa2}>
                 <Text style = {styles.title1}>Como funciona? </Text>
-                 <Text style = {styles.title2}>O sistema é composto por um microcontrolador e por 3 sensores em campo. As leituras dos sensores são feitas 5 vezes ao dia. O microcontrolador recebe os dados coletado e em seguida envia os dados atráves da comunicação LoRaWan. </Text>
+                 <Text style = {styles.title2}>O sistema é composto por um microcontrolador e por 3 sensores em campo. As leituras dos sensores são feitas 5 vezes ao dia. O microcontrolador recebe os dados coletado e em seguida envia os dados atráves da comunicação LoRa P2P. </Text>
                 </View>
 
                 <View style={styles.caixa2}>
-                <Text style = {styles.title1}>Link para o Firebase </Text>
-                <Text style = {styles.title2}> https://app-24-dd3a7-default-rtdb.firebaseio.com/ </Text>
+                <Text style={styles.title1}>Link para o Firebase </Text>
+                <Text style={{ ...styles.title2, color: 'blue', textDecorationLine: 'underline' }} onPress={() => Linking.openURL('https://sist-qualidade-agua-default-rtdb.firebaseio.com')}>
+                  https://sist-qualidade-agua-default-rtdb.firebaseio.com
+                </Text>
                 </View>
+
+                
 
                 <Text style = {styles.title5}>Parâmetros dos sensores: </Text>
 
@@ -474,3 +488,6 @@ const styles = StyleSheet.create({
 
 
     });
+
+
+    
