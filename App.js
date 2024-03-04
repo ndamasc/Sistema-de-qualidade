@@ -5,23 +5,26 @@ import { useState, useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { Button, View, Text, TextInput, StyleSheet, TouchableOpacity, Image, ScrollView, Linking} from 'react-native';
+import { Button, View, Text, TextInput, StyleSheet, TouchableOpacity, Image, ScrollView, Linking, FlatList} from 'react-native';
 import { firebase_auth } from './firebaseConfig'; 
-import { signInWithEmailAndPassword } from 'firebase/auth'; // Certifique-se de importar corretamente a função de autenticação do Firebase
+import { signInWithEmailAndPassword, signOut } from 'firebase/auth'; // Certifique-se de importar corretamente a função de autenticação do Firebase
 import { Ionicons } from '@expo/vector-icons';
 import { AntDesign } from '@expo/vector-icons';
-import { ViewPropTypes } from 'deprecated-react-native-prop-types';
 
 
 import { getDatabase, ReferenceError , onValue, ref, DataSnapshot } from 'firebase/database';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+const auth = firebase_auth;
 
-const LoginScreen = ({ navigation, setIsLoggedIn }) => {
+
+
+
+const LoginScreen = ({setIsLoggedIn }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const auth = firebase_auth;
+  
 
   const signIn = async () => {
     try {
@@ -45,9 +48,9 @@ const LoginScreen = ({ navigation, setIsLoggedIn }) => {
 
   return (
     <View style={styles.container}>
-      <Image source={require("./imagens/logo_perfeita.jpg")} style={styles.logo} />        
+      <Image source={require("./imagens/outra_logo.jpg")} style={styles.logo} />        
         <TextInput
-            style={styles.input}
+            style={styles.input2}
             placeholder="Email"
             onChangeText={(text) => setEmail(text)}
             value={email}
@@ -113,22 +116,22 @@ return (
           <View style={{...styles.caixaContainer, backgroundColor: '#b5cacf', borderTopLeftRadius: 50, borderTopRightRadius:50}}>
             <View style={styles.caixa}>
                 <Text style={styles.title2}>Temperatura</Text>
-                <Image source={require("./imagens/temp.jpg")} style={styles.imagemNaCaixa} />
+                <Image source={require("./imagens/temperatura.gif")} style={styles.imagemNaCaixa} />
                 <Text style={styles.textoNaCaixa}>{userData.tempAgua} °C </Text>
             </View>
           <View style={styles.caixa}>
             <Text style = {styles.title2}> Alcalinidade </Text>
-            <Image source={require("./imagens/ph.jpg")} style={styles.imagemNaCaixa} />
+            <Image source={require("./imagens/fermentacao2.png")} style={styles.imagemNaCaixa} />
             <Text style={styles.textoNaCaixa}>{userData.ph} </Text>
           </View>
           <View style={styles.caixa}>
             <Text style = {styles.title2}> Turbidez </Text>
-            <Image source={require("./imagens/turbidez.jpg")} style={styles.imagemNaCaixa} />
+            <Image source={require("./imagens/detritos-marinhos.png")} style={styles.imagemNaCaixa} />
             <Text style={styles.textoNaCaixa}>{userData.turb} </Text>
           </View>
           <View style={styles.caixa}>
             <Text style = {styles.title2}> Concetração de gases </Text>
-            <Image source={require("./imagens/gas.jpg")} style={styles.imagemNaCaixa} />
+            <Image source={require("./imagens/poluicao-do-ar.gif")} style={styles.imagemNaCaixa} />
             <Text style={styles.textoNaCaixa}>{userData.gas} </Text>
           </View>
 
@@ -168,12 +171,6 @@ return (
     }, []);
 
 
-/*
-
-
-
-*/
-
 
   const userIds = Object.keys(userData);
 
@@ -210,8 +207,24 @@ return (
 
   
 // Tela de Configuração
-const SettingsScreen = () => {
+const SettingsScreen = ({ setIsLoggedIn }) => {
+
+  const signOutApp = async () => {
+    try {
+      const response = await signOut(auth);
+      console.log(response);
+      console.log(setIsLoggedIn)
+      alert('Logout realizado com sucesso!');
+      
+      setIsLoggedIn(false);
+    } catch (error) {
+      alert('Falha na autenticação: ' + error.message);
+      console.log(error);
+    }
+  };
+
   const [loggedInUser, setLoggedInUser] = useState(null);
+
 
   useEffect(() => {
     const getLoggedInUser = async () => {
@@ -225,18 +238,22 @@ const SettingsScreen = () => {
 
     getLoggedInUser();
   }, []);
+
+  /*  <Image source={require("./imagens/amazonas.png")} style={styles.imagemNaCaixa} />   */
  
   return(
     <ScrollView contentContainerStyle={{...styles.scrollContainer, backgroundColor: "#477b87"}}>   
 
             <View style={styles.headerContainer}>
               <Text style={styles.headerText}>Informações</Text>
-            </View>
+              
+            </View>           
               <View style={{...styles.caixaContainer, backgroundColor: '#b5cacf', borderTopLeftRadius: 50, borderTopRightRadius:50}}>
                 <View style={styles.caixa3}>
                   <Image source={require("./imagens/user.jpg")} style={styles.imagemTopico} />
                   <Text style = {styles.title1}>Usuário logado: </Text>
                   <Text style = {{...styles.title2, color: '#5e81bf'}}>{loggedInUser} </Text>
+                  <Button title='Logout' onPress={signOutApp}></Button>
                 </View>
 
                 <View style={styles.caixa2}>
@@ -246,7 +263,7 @@ const SettingsScreen = () => {
                 </View>
 
                   <View style={styles.caixa2}>
-                  <Image source={require("./imagens/link.jpg")} style={styles.topicoCaixa} />
+                  <Image source={require("./imagens/dominio.png")} style={styles.topicoCaixa2} />
                   <Text style={styles.title3}>Link para o Firebase </Text>
                   <Text style={{ ...styles.title2, color: '#5e81bf', textDecorationLine: 'underline' }} onPress={() => Linking.openURL('https://sist-react-default-rtdb.firebaseio.com')}>
                   https://sist-react-default-rtdb.firebaseio.com
@@ -282,8 +299,7 @@ const SettingsScreen = () => {
                   <Text style = {styles.title2}>• Fumaça</Text>
                   </View>
 
-                  
-
+                                                  
               <StatusBar style="auto" />
           </View>
    
@@ -307,7 +323,7 @@ const LoginStack = ({ setIsLoggedIn }) => (
 // Configuração da navegação em Tabs para as telas de Home e Configuração
 const Tab = createBottomTabNavigator();
 
-const MainTabs = ({email}) => (
+const MainTabs = ({setIsLoggedIn}) => (
   <Tab.Navigator>
     <Tab.Screen name="Home" component={HomeScreen}
       options={{
@@ -331,22 +347,20 @@ const MainTabs = ({email}) => (
             }
             return <AntDesign name="table" size={24} color="grey" />;
         },
-      }} />
-    <Tab.Screen name="Configurações" component={SettingsScreen}
-          options={{
-            tabBarShowLabel: false,
-            headerShown: false,
-            tabBarIcon: ({ focused, size, color }) => {
-                if (focused) {
+      }}></Tab.Screen>
+   <Tab.Screen name="Configurações"
+    options={{
+        tabBarShowLabel: false,
+        headerShown: false,
+        tabBarIcon: ({ focused, size, color }) => {
+            if (focused) {
                 return <Ionicons name="information-circle" size={24} color="#5772ff" />;
-                }
-                return <Ionicons size={size} color={color} name="information-circle-outline" />;
-            },
-            }} />
-
-
-    
-
+            }
+            return <Ionicons size={size} color={color} name="information-circle-outline" />;
+        },
+    }}>
+    {() => <SettingsScreen setIsLoggedIn={setIsLoggedIn} />}
+</Tab.Screen>
 
   </Tab.Navigator>
 );
@@ -359,7 +373,7 @@ const App = () => {
   return (
     <NavigationContainer>
       {isLoggedIn ? (
-        <MainTabs />
+        <MainTabs setIsLoggedIn={setIsLoggedIn} />
       ) : (
         <LoginStack setIsLoggedIn={setIsLoggedIn} />
       )}
@@ -378,14 +392,15 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   logo: {
-    marginBottom: 80,
-    height: 250,
-    width: 250,
-    backgroundColor: "#F3F3F3"
+    marginBottom: 50,
+    height: 150,
+    width: 150,
+    backgroundColor: "#F3F3F3",
+    marginTop: -75
   },
   button: {
     backgroundColor: "#F3F3F3",
-    width: "40%",
+    width: "30%",
     height: 50,
     alignItems: 'center',
     justifyContent: 'center',
@@ -424,6 +439,17 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     borderRadius: 30,
     paddingHorizontal: 20,
+
+  },
+  input2: {
+    backgroundColor: "#F3F3F3",
+    width: "80%",
+    height: 50,
+    marginBottom: 20,
+    
+    borderRadius: 30,
+    paddingHorizontal: 20,
+
   },
   container4: {
     flex: 1,
@@ -528,6 +554,14 @@ const styles = StyleSheet.create({
     marginBottom: -45,
     //marginRight: 15,
     marginLeft: 0,
+    marginRight : -100,
+    
+  },
+  topicoCaixa2: {
+    width: 30,
+    height: 30,
+    marginBottom: -38,
+    marginLeft: 5,
     marginRight : -100,
     
   },

@@ -1,13 +1,13 @@
 {
   "expo": {
     "name": "ClearFlow Sentinel",
-    "slug": "ClearFlow Sentinel",
+    "slug": "clear-flow-sentinel",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./imagens/logo_perfeita2.jpg",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./imagens/logo_e_nome2.jpg",
+      "image": "./imagens/splashscreen.jpg",
       "resizeMode": "center",
       "backgroundColor": "#477b87"
     },
@@ -21,10 +21,23 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#477b87"
-      }
+      },
+      "package": "com.naaath567.clearflowsentinel"
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "plugins": [
+      "expo-router"
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "383cb67a-fe1b-4ff3-8bf8-d686d28abcef"
+      },
+      "router": {
+        "origin": false
+      }
+    },
+    "owner": "naaath567"
   }
 }
